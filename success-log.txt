@@ -1,0 +1,463 @@
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:4
+load:0x3fff0034,len:7240
+load:0x40078000,len:13856
+ho 0 tail 12 room 4
+load:0x40080400,len:4052
+entry 0x40080688
+␛[0;32mI (31) boot: ESP-IDF 3.40100.200827 2nd stage bootloader␛[0m
+␛[0;32mI (31) boot: compile time 20:45:17␛[0m
+␛[0;32mI (31) boot: chip revision: 1␛[0m
+␛[0;32mI (34) boot_comm: chip revision: 1, min. bootloader chip revision: 0␛[0m
+␛[0;32mI (41) boot.esp32: SPI Speed      : 40MHz␛[0m
+␛[0;32mI (46) boot.esp32: SPI Mode       : DIO␛[0m
+␛[0;32mI (50) boot.esp32: SPI Flash Size : 4MB␛[0m
+␛[0;32mI (55) boot: Enabling RNG early entropy source...␛[0m
+␛[0;32mI (60) boot: Partition Table:␛[0m
+␛[0;32mI (64) boot: ## Label            Usage          Type ST Offset   Length␛[0m
+␛[0;32mI (71) boot:  0 nvs              WiFi data        01 02 00009000 00004000␛[0m
+␛[0;32mI (79) boot:  1 otadata          OTA data         01 00 0000d000 00002000␛[0m
+␛[0;32mI (86) boot:  2 phy_init         RF data          01 01 0000f000 00001000␛[0m
+␛[0;32mI (94) boot:  3 ota_0            OTA app          00 10 00010000 001db000␛[0m
+␛[0;32mI (101) boot:  4 ota_1            OTA app          00 11 001f0000 001db000␛[0m
+␛[0;32mI (109) boot: End of partition table␛[0m
+␛[0;32mI (113) boot_comm: chip revision: 1, min. application chip revision: 0␛[0m
+␛[0;32mI (120) esp_image: segment 0: paddr=0x00010020 vaddr=0x3f400020 size=0x511f4 (332276) map␛[0m
+␛[0;32mI (273) esp_image: segment 1: paddr=0x0006121c vaddr=0x3ffb0000 size=0x05038 ( 20536) load␛[0m
+␛[0;32mI (283) esp_image: segment 2: paddr=0x0006625c vaddr=0x40080000 size=0x00404 (  1028) load␛[0m
+␛[0;32mI (284) esp_image: segment 3: paddr=0x00066668 vaddr=0x40080404 size=0x099b0 ( 39344) load␛[0m
+␛[0;32mI (310) esp_image: segment 4: paddr=0x00070020 vaddr=0x400d0020 size=0x123a00 (1194496) map␛[0m
+␛[0;32mI (827) esp_image: segment 5: paddr=0x00193a28 vaddr=0x40089db4 size=0x12bc8 ( 76744) load␛[0m
+␛[0;32mI (881) boot: Loaded app from partition at offset 0x10000␛[0m
+␛[0;32mI (881) boot: Disabling RNG early entropy source...␛[0m
+␛[0;32mI (882) psram: This chip is ESP32-D0WD␛[0m
+␛[0;32mI (886) spiram: Found 64MBit SPI RAM device␛[0m
+␛[0;32mI (891) spiram: SPI RAM mode: flash 40m sram 40m␛[0m
+␛[0;32mI (896) spiram: PSRAM initialized, cache is in low/high (2-core) mode.␛[0m
+␛[0;32mI (903) cpu_start: Pro cpu up.␛[0m
+␛[0;32mI (907) cpu_start: Application information:␛[0m
+␛[0;32mI (912) cpu_start: Project name:     esp32cam-server-only␛[0m
+␛[0;32mI (918) cpu_start: App version:      0.0.9.3␛[0m
+␛[0;32mI (923) cpu_start: Compile time:     Sep  6 2021 20:40:36␛[0m
+␛[0;32mI (929) cpu_start: ELF file SHA256:  7ceb8f36e80b06a3...␛[0m
+␛[0;32mI (935) cpu_start: ESP-IDF:          3.40100.200827␛[0m
+␛[0;32mI (941) cpu_start: Starting app cpu, entry point is 0x40081ad8␛[0m
+␛[0;32mI (0) cpu_start: App cpu up.␛[0m
+␛[0;32mI (1838) spiram: SPI SRAM memory test OK␛[0m
+␛[0;32mI (1839) heap_init: Initializing. RAM available for dynamic allocation:␛[0m
+␛[0;32mI (1839) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM␛[0m
+␛[0;32mI (1845) heap_init: At 3FFC29D0 len 0001D630 (117 KiB): DRAM␛[0m
+␛[0;32mI (1851) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM␛[0m
+␛[0;32mI (1858) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM␛[0m
+␛[0;32mI (1864) heap_init: At 4009C97C len 00003684 (13 KiB): IRAM␛[0m
+␛[0;32mI (1871) cpu_start: Pro cpu start user code␛[0m
+␛[0;32mI (1875) spiram: Adding pool of 4096K of external SPI memory to heap allocator␛[0m
+␛[0;32mI (1901) spi_flash: detected chip: generic␛[0m
+␛[0;32mI (1902) spi_flash: flash io: dio␛[0m
+␛[0;32mI (1902) cpu_start: Starting scheduler on PRO CPU.␛[0m
+␛[0;32mI (0) cpu_start: Starting scheduler on APP CPU.␛[0m
+␛[0;32mI (1910) spiram: Reserving pool of 32K of internal memory for DMA/internal allocations␛[0m
+Do Reset Camera
+␛[0;32mI (1920) gpio: GPIO[32]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 ␛[0m
+Init Camera
+␛[0;32mI (3930) gpio: GPIO[5]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3930) gpio: GPIO[18]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3930) gpio: GPIO[19]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3940) gpio: GPIO[21]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3950) gpio: GPIO[22]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3960) gpio: GPIO[23]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3970) gpio: GPIO[25]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3980) gpio: GPIO[34]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (3990) gpio: GPIO[35]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (4000) gpio: GPIO[36]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (4010) gpio: GPIO[39]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (4020) sccb: pin_sda 26 pin_scl 27
+␛[0m
+␛[0;32mI (4020) gpio: GPIO[32]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 ␛[0m
+␛[0;32mI (4170) camera: Detected OV2640 camera␛[0m
+␛[0;32mI (4180) camera: Allocating 1 frame buffers (150 KB total)␛[0m
+␛[0;32mI (4190) camera: Allocating 150 KB frame buffer in OnBoard RAM␛[0m
+␛[0;32mI (4790) main: Using SDMMC peripheral␛[0m
+Name: USD00
+Type: SDHC/SDXC
+Speed: 20 MHz
+Size: 3800MB
+␛[0;32mI (4830) server_ota: Start CheckOTAUpdateCheck ...␛[0m
+Start CheckOTAUpdateCheck ...
+␛[0;32mI (4840) server_ota: SHA-256 for the partition table: : 9d4a2809ae90fb20709a8ca3dd3ac3462e1e73286bcd31b689060c91de06fa3a␛[0m
+␛[0;32mI (4900) server_ota: SHA-256 for bootloader: : 7cf39bbaca63977f6e319555c16b6acf253f1fe39f69b50ccde54dcf3eb98f50␛[0m
+␛[0;32mI (5540) server_ota: SHA-256 for current firmware: : 7edd9f7613dc11ed2e2aca00396900f1396345daa17f3000d6d4bd7f53f28fd3␛[0m
+CheckOTAUpdate Partition: ESP_OK
+open config file /sdcard/wlan.ini in mode r
+file loaded
+
+WLan: Dyware 3, p@ssw0rd
+Hostename: watermeter
+I (5600) wifi:wifi driver task: 3ffd9d0c, prio:23, stack:6656, core=0
+␛[0;32mI (5600) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE␛[0m
+␛[0;32mI (5600) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE␛[0m
+I (5630) wifi:wifi firmware version: 3ea4c76
+I (5630) wifi:config NVS flash: enabled
+I (5630) wifi:config nano formating: disabled
+I (5630) wifi:Init dynamic tx buffer num: 32
+I (5640) wifi:Init data frame dynamic rx buffer num: 32
+I (5640) wifi:Init management frame dynamic rx buffer num: 32
+I (5650) wifi:Init management short buffer num: 32
+I (5650) wifi:Init static tx buffer num: 16
+I (5660) wifi:Init static rx buffer size: 1600
+I (5660) wifi:Init static rx buffer num: 10
+I (5660) wifi:Init dynamic rx buffer num: 32
+D (5670) wifi:clear blacklist
+␛[0;32mI (5760) phy: phy_version: 4180, cb3948e, Sep 12 2019, 16:39:13, 0, 0␛[0m
+D (5760) wifi:filter: set rx policy=0
+I (5760) wifi:mode : sta (10:52:1c:75:5e:f8)
+D (5760) wifi:filter: set rx policy=1
+D (5770) wifi:connect status 0 -> 0
+␛[0;32mI (5770) BLINK: Blinken - start␛[0m
+D (5770) wifi:Start wifi connect
+D (5780) wifi:connect status 0 -> 0
+D (5780) wifi:connect chan=0
+D (5780) wifi:first chan=10
+D (5780) wifi:connect status 0 -> 1
+D (5790) wifi:filter: set rx policy=3
+D (5790) wifi:clear scan ap list
+D (5790) wifi:start scan: type=0x50f, priority=2, cb=0x4013d328, arg=0x0, ss_state=0x1, time=34471, index=0
+D (5800) wifi:perform scan: ss_state=0x9, chan<10,0>, dur<0,120>
+␛[0;32mI (5770) wifi station: wifi_init_sta finished.␛[0m
+D (5820) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (5820) wifi:profile match: ss_state=0x7
+D (5860) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (5860) wifi:set max rate: from <rate=130, phy=3, sig=0> to <rate=144, phy=3 sig=0>
+D (5860) wifi:sig_b=0, sig_g=0, sig_n=0, max_b=22, max_g=108, max_n=144
+D (5870) wifi:profile match: ss_state=0x7
+D (5930) wifi:scan end: arg=0x0, status=0, ss_state=0x7
+D (5930) wifi:find first mathched ssid, scan done
+D (5930) wifi:filter: set rx policy=4
+D (5930) wifi:first chan=1
+D (5940) wifi:handoff_cb: status=0
+D (5940) wifi:ap found, mac=a8:2b:cd:a2:53:84
+D (5940) wifi:new_bss=0x3ffb9448, cur_bss=0x0, new_chan=<10,0>, cur_chan=1
+D (5950) wifi:filter: set rx policy=5
+I (5950) wifi:new:<10,0>, old:<1,0>, ap:<255,255>, sta:<10,0>, prof:1
+D (5960) wifi:connect_op: status=0, auth=5, cipher=3
+D (5960) wifi:auth mode is not none
+D (5970) wifi:connect_bss: auth=1, reconnect=0
+␛[0;32mI (5970) BLINK: Blinken - done␛[0m
+I (5970) wifi:state: init -> auth (b0)
+D (5980) wifi:start 1s AUTH timer
+D (5980) wifi:clear scan ap list
+D (5990) wifi:recv auth: seq=2, status=0
+I (5990) wifi:state: auth -> assoc (0)
+D (5990) wifi:restart connect 1s timer for assoc
+D (6000) wifi:recv disassoc: reason=4
+I (6000) wifi:state: assoc -> init (4a0)
+D (6000) wifi:connect status 1 -> 4
+D (6010) wifi:stop beacon/connect timer
+D (6010) wifi:add bssid a8:2b:cd:a2:53:84 to blacklist, cnt=0
+D (6010) wifi:stop CSA timer
+D (6020) wifi:remove a8:2b:cd:a2:53:84 from rc list
+I (6020) wifi:new:<10,0>, old:<10,0>, ap:<255,255>, sta:<10,0>, prof:1
+D (6030) wifi:filter: set rx policy=8
+D (6030) wifi:reason: assoc expire(4)
+D (6030) wifi:Send disconnect event, reason=4, AP number=0
+D (6040) wifi:Start wifi connect
+D (6040) wifi:connect status 4 -> 0
+D (6050) wifi:connect chan=0
+D (6050) wifi:first chan=10
+D (6050) wifi:connect status 0 -> 1
+D (6050) wifi:filter: set rx policy=3
+D (6060) wifi:clear scan ap list
+D (6060) wifi:start scan: type=0x50f, priority=2, cb=0x4013d328, arg=0x0, ss_state=0x1, time=301271, index=0
+D (6070) wifi:perform scan: ss_state=0x9, chan<10,0>, dur<0,120>
+D (6080) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6080) wifi:find the a8:2b:cd:a2:53:84 in blacklist.
+
+␛[0;32mI (6090) wifi station: retry to connect to the AP␛[0m
+D (6090) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+␛[0;32mI (6100) wifi station: connect to the AP fail␛[0m
+
+D (6100) wifi:find the a8:2b:cd:a2:53:84 in blacklist.
+
+D (6160) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6170) wifi:find the a8:2b:cd:a2:53:84 in blacklist.
+
+D (6200) wifi:scan end: arg=0x0, status=0, ss_state=0x3
+D (6200) wifi:perform scan: ss_state=0x9, chan<1,0>, dur<0,120>
+D (6210) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6210) wifi:profile match: ss_state=0x7
+D (6220) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6220) wifi:set max rate: from <rate=130, phy=3, sig=0> to <rate=144, phy=3 sig=0>
+D (6220) wifi:sig_b=0, sig_g=0, sig_n=0, max_b=22, max_g=108, max_n=144
+D (6230) wifi:profile match: ss_state=0x7
+D (6320) wifi:scan end: arg=0x0, status=0, ss_state=0x7
+D (6320) wifi:find first mathched ssid, scan done
+D (6320) wifi:filter: set rx policy=4
+D (6320) wifi:first chan=1
+D (6320) wifi:handoff_cb: status=0
+D (6330) wifi:ap found, mac=a8:2b:cd:a2:53:40
+D (6330) wifi:new_bss=0x3ffb9448, cur_bss=0x0, new_chan=<1,0>, cur_chan=10
+D (6340) wifi:filter: set rx policy=5
+I (6340) wifi:new:<1,0>, old:<10,0>, ap:<255,255>, sta:<1,0>, prof:1
+D (6350) wifi:connect_op: status=0, auth=5, cipher=3
+D (6350) wifi:auth mode is not none
+D (6350) wifi:connect_bss: auth=1, reconnect=0
+I (6360) wifi:state: init -> auth (b0)
+D (6360) wifi:start 1s AUTH timer
+D (6370) wifi:clear scan ap list
+D (6390) wifi:recv auth: seq=2, status=0
+I (6390) wifi:state: auth -> assoc (0)
+D (6390) wifi:restart connect 1s timer for assoc
+D (6400) wifi:recv assoc: type=0x10
+D (6400) wifi:filter: set rx policy=6
+I (6400) wifi:state: assoc -> run (10)
+D (6400) wifi:start 10s connect timer for 4 way handshake
+D (6430) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6530) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6630) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6730) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6840) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (6940) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (7040) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (7140) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (7240) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (7350) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+D (7450) wifi:rsn valid: gcipher=3 ucipher=3 akm=5
+
+I (7470) wifi:connected with Dyware 3, aid = 47, channel 1, BW20, bssid = a8:2b:cd:a2:53:40
+I (7470) wifi:security: WPA2-PSK, phy: bgn, rssi: -52
+D (7470) wifi:remove all except a8:2b:cd:a2:53:40 from rc list
+D (7480) wifi:clear blacklist
+D (7510) wifi:filter: set rx policy=7
+I (7510) wifi:pm start, type: 1
+
+D (7510) wifi:Send sta connected event
+D (7510) wifi:connect status 1 -> 5
+D (7520) wifi:obss scan is disabled
+D (7520) wifi:start obss scan: obss scan is stopped
+I (7550) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+␛[0;32mI (10580) esp_netif_handlers: sta ip: 192.168.101.69, mask: 255.255.255.0, gw: 192.168.101.1␛[0m
+␛[0;32mI (10580) wifi station: got ip:192.168.101.69␛[0m
+␛[0;32mI (10580) wifi station: connected to ap SSID:Dyware 3 password:p@ssw0rd␛[0m
+␛[0;32mI (10580) BLINK: Blinken - start␛[0m
+main: sleep for : 200ms
+␛[0;32mI (12600) sntp: Time is not set yet. Connecting to WiFi and getting time over NTP.␛[0m
+␛[0;32mI (12600) sntp: Initializing SNTP␛[0m
+␛[0;32mI (12600) sntp: Waiting for system time to be set... (1/10)␛[0m
+TimeZone set to CET-1CEST,M3.5.0,M10.5.0/3
+Logfile opened: /sdcard/log/message/log_2021-09-14.txt
+␛[0;32mI (14610) sntp: The current date/time in Berlin is: Tue Sep 14 13:14:22 2021␛[0m
+␛[0;32mI (14610) sntp: The current date/time in Berlin is: 2021-09-14_13:14␛[0m
+timeist 20210914-131422
+Logfile opened: /sdcard/log/message/log_2021-09-14.txt
+Logfile opened: /sdcard/log/message/log_2021-09-14.txt
+Logfile opened: /sdcard/log/message/log_2021-09-14.txt
+time 20210914-131422
+main: sleep for : 200ms
+␛[0;32mI (16650) server-main: Starting server on port: '80'␛[0m
+␛[0;32mI (16650) server-main: Registering URI handlers␛[0m
+␛[0;32mI (16650) server_tflite: server_part_camera - Registering URI handlers␛[0m
+␛[0;32mI (16650) server_ota: server_ota - Registering URI handlers␛[0m
+␛[0;32mI (16660) server_GPIO: start GpioHandler␛[0m
+␛[0;32mI (16660) server_GPIO: register GPIO Uri␛[0m
+␛[0;32mI (16670) server_GPIO: server_GPIO - Registering URI handlers␛[0m
+vor reg server main
+vor dotautostart
+Start!!!
+task_autodoFlow: start
+Start tfliteflow.InitFlow(config);
+open config file /sdcard/config/config.ini in mode r
+[MakeImage]
+Start ReadParameter
+;LogImageLocation = /log/source
+WaitBeforeTakingPicture = 5
+;LogfileRetentionInDays = 15
+Brightness = -5
+;Contrast = 0
+;Saturation = 0
+ImageQuality = 5
+ImageSize = VGA
+FixedExposure = false
+
+[Alignment]
+Start ReadParameter
+InitialRotate = 179
+InitialMirror = false
+SearchFieldX = 20
+SearchFieldY = 20
+AlignmentAlgo = default
+FlipImageSize = false
+/config/ref0.jpg 77 13
+/config/ref1.jpg 531 204
+
+[Digits]
+2021-09-08T11:13:11
+Start ReadParameter
+aktparamgraph: [Digits]
+Name Digit:
+Model = /config/dig1200s1q.tflite
+;LogImageLocation = /log/digit
+;LogfileRetentionInDays = 3
+ModelInputSize = 20 32
+main.dig1 130 53 104 186
+GetDIGIT - digit main - roi dig1
+main.name 316 30 94 169
+GetDIGIT - digit main - roi name
+main.dig3 409 27 110 198
+GetDIGIT - digit main - roi dig3
+
+[Analog]
+Start ReadParameter
+Model = /config/ana0700s1lq.tflite
+;LogImageLocation = /log/analog
+;LogfileRetentionInDays = 3
+ModelInputSize = 32 32
+ExtendedResolution = true
+
+[PostProcessing]
+Start ReadParameter
+Anzahl NUMBERS: 1 - DIGITS: 1, ANALOG: 0
+Number main, Anz DIG: 3, Anz ANA 0
+main.DecimalShift = 0
+PreValueUse = true
+PreValueAgeStartup = 720
+AllowNegativeRates = false
+main.MaxRateValue = 0.1
+ErrorMessage = true
+CheckDigitIncreaseConsistency = true
+
+;[MQTT]
+Read Zeile Prevalue.ini: main   2021-09-07T13:58:00     436
+Read: ;Uri = mqtt://IP-ADRESS:1883
+Read: ;MainTopic = wasserzaehler
+Read: ;ClientID = wasser
+Read: ;user = USERNAME
+Read: ;password = PASSWORD
+Read:
+Read: ;[GPIO]
+Read: ;IO0 = input disabled 10 false false
+Read: ;IO1 = input disabled 10 false false
+Read: ;IO3 = input disabled 10 false false
+Read: ;IO4 = built-in-led disabled 10 false false
+Read: ;IO12 = input-pullup disabled 10 false false
+Read: ;IO13 = input-pullup disabled 10 false false
+Read:
+Read: [AutoTimer]
+Start ReadParameter
+AutoStart = true
+Intervall = 4.85
+
+[Debug]
+Start ReadParameter
+Logfile = false
+LogfileRetentionInDays = 3
+
+[System]
+Start ReadParameter
+TimeZone = CET-1CEST,M3.5.0,M10.5.0/3
+TimeZone set to CET-1CEST,M3.5.0,M10.5.0/3
+;TimeServer = undefined
+;AutoAdjustSummertime = false
+;Hostname = undefined
+;SetupMode = false
+Finished tfliteflow.InitFlow(config);
+␛[0;32mI (18500) server_GPIO: read GPIO config and init GPIO␛[0m
+open config file /sdcard/config/config.ini in mode r
+[MakeImage]
+;LogImageLocation = /log/source
+WaitBeforeTakingPicture = 5
+;LogfileRetentionInDays = 15
+Brightness = -5
+;Contrast = 0
+;Saturation = 0
+ImageQuality = 5
+ImageSize = VGA
+FixedExposure = false
+
+[Alignment]
+InitialRotate = 179
+InitialMirror = false
+SearchFieldX = 20
+SearchFieldY = 20
+AlignmentAlgo = default
+FlipImageSize = false
+/config/ref0.jpg 77 13
+/config/ref1.jpg 531 204
+
+[Digits]
+Model = /config/dig1200s1q.tflite
+;LogImageLocation = /log/digit
+;LogfileRetentionInDays = 3
+ModelInputSize = 20 32
+main.dig1 130 53 104 186
+main.name 316 30 94 169
+main.dig3 409 27 110 198
+
+[Analog]
+Model = /config/ana0700s1lq.tflite
+;LogImageLocation = /log/analog
+;LogfileRetentionInDays = 3
+ModelInputSize = 32 32
+ExtendedResolution = true
+
+[PostProcessing]
+main.DecimalShift = 0
+PreValueUse = true
+PreValueAgeStartup = 720
+AllowNegativeRates = false
+main.MaxRateValue = 0.1
+ErrorMessage = true
+CheckDigitIncreaseConsistency = true
+
+;[MQTT]
+␛[0;32mI (18590) server_GPIO: GPIO init comleted, handler is disabled␛[0m
+Autoflow: start
+Autoflow: doFLow wird gestartet
+doflow - start 20210914-131426
+Flashdauer: 5000
+␛[0;32mI (20600) BLINK: Blinken - done␛[0m
+Image loaded from memory: 640, 480, 3
+␛[0;31mE (26900) task_wdt: Task watchdog got triggered. The following tasks did not reset the watchdog in time:␛[0m
+␛[0;31mE (26900) task_wdt:  - IDLE0 (CPU 0)␛[0m
+␛[0;31mE (26900) task_wdt: Tasks currently running:␛[0m
+␛[0;31mE (26900) task_wdt: CPU 0: task_autodoFlow␛[0m
+␛[0;31mE (26900) task_wdt: CPU 1: IDLE1␛[0m
+Vor ft->FindTemplate(_temp1);  /sdcard/config/ref0.jpg
+␛[0;31mE (32620) task_wdt: Task watchdog got triggered. The following tasks did not reset the watchdog in time:␛[0m
+␛[0;31mE (32620) task_wdt:  - IDLE0 (CPU 0)␛[0m
+␛[0;31mE (32620) task_wdt: Tasks currently running:␛[0m
+␛[0;31mE (32620) task_wdt: CPU 0: task_autodoFlow␛[0m
+␛[0;31mE (32620) task_wdt: CPU 1: IDLE1␛[0m
+␛[0;31mE (35620) task_wdt: Task watchdog got triggered. The following tasks did not reset the watchdog in time:␛[0m
+␛[0;31mE (35620) task_wdt:  - IDLE0 (CPU 0)␛[0m
+␛[0;31mE (35620) task_wdt: Tasks currently running:␛[0m
+␛[0;31mE (35620) task_wdt: CPU 0: task_autodoFlow␛[0m
+␛[0;31mE (35620) task_wdt: CPU 1: IDLE1␛[0m
+␛[0;31mE (38620) task_wdt: Task watchdog got triggered. The following tasks did not reset the watchdog in time:␛[0m
+␛[0;31mE (38620) task_wdt:  - IDLE0 (CPU 0)␛[0m
+␛[0;31mE (38620) task_wdt: Tasks currently running:␛[0m
+␛[0;31mE (38620) task_wdt: CPU 0: task_autodoFlow␛[0m
+␛[0;31mE (38620) task_wdt: CPU 1: IDLE1␛[0m
+␛[0;31mE (41620) task_wdt: Task watchdog got triggered. The following tasks did not reset the watchdog in time:␛[0m
+␛[0;31mE (41620) task_wdt:  - IDLE0 (CPU 0)␛[0m
+␛[0;31mE (41620) task_wdt: Tasks currently running:␛[0m
+␛[0;31mE (41620) task_wdt: CPU 0: task_autodoFlow␛[0m
+␛[0;31mE (41620) task_wdt: CPU 1: IDLE1␛[0m
