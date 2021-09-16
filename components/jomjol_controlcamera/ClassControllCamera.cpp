@@ -24,6 +24,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+// #include <FS.h>
+#include <rom/tjpgd.h>
+// #include "../../lib/ttgo-plus/ST7789.h"
+// #include "../../lib/ttgo-plus/tjpgdec.h"
+
 #include "esp_camera.h"
 
 #define DEBUG_DETAIL_ON
