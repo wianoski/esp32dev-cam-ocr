@@ -24,10 +24,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-// #include <FS.h>
-#include <rom/tjpgd.h>
-// #include "../../lib/ttgo-plus/ST7789.h"
-// #include "../../lib/ttgo-plus/tjpgdec.h"
+#include <../st7789/main/decode_jpeg.h>
+#include <../st7789/main/st7789.h>
+#include <../st7789/main/bmpfile.h>
 
 #include "esp_camera.h"
 
