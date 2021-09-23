@@ -4,6 +4,7 @@
 #include "freertos/event_groups.h"
 
 #include "driver/gpio.h"
+#include "esp_log.h"
 #include "sdkconfig.h"
 
 // SD-Card ////////////////////
@@ -28,6 +29,21 @@
 #include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
+
+#include "../st7789/main/decode_jpeg.h"
+#include "../st7789/main/st7789.h"
+#include "../st7789/main/bmpfile.h"
+#include "../st7789/main/pngle.h"
+#define CONFIG_WIDTH 240
+#define CONFIG_HEIGHT 240
+static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
+#ifdef CONFIG_IDF_TARGET_ESP32
+#define LCD_HOST HSPI_HOST
+#elif defined CONFIG_IDF_TARGET_ESP32S2
+#define LCD_HOST SPI2_HOST
+#elif defined CONFIG_IDF_TARGET_ESP32C3
+#define LCD_HOST SPI2_HOST
+#endif
 
 #define __SD_USE_ONE_LINE_MODE__
 
@@ -78,7 +94,7 @@ bool Init_NVS_SDCard()
     // Internal pull-ups are not sufficient. However, enabling internal pull-ups
     // does make a difference some boards, so we do that here.
     gpio_set_pull_mode(GPIO_NUM_19, GPIO_PULLUP_ONLY); // CMD, needed in 4- and 1- line modes
-    gpio_set_pull_mode(GPIO_NUM_22, GPIO_PULLUP_ONLY);  // D0, needed in 4- and 1-line modes
+    gpio_set_pull_mode(GPIO_NUM_22, GPIO_PULLUP_ONLY); // D0, needed in 4- and 1-line modes
 #ifndef __SD_USE_ONE_LINE_MODE__
     gpio_set_pull_mode(GPIO_NUM_4, GPIO_PULLUP_ONLY);  // D1, needed in 4-line mode only
     gpio_set_pull_mode(GPIO_NUM_12, GPIO_PULLUP_ONLY); // D2, needed in 4-line mode only
@@ -148,6 +164,93 @@ void task_NoSDBlink(void *pvParameter)
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
+void spi_master_init(TFT_t *dev)
+{
+    esp_err_t ret;
+    int16_t GPIO_MOSI = 19;
+    int16_t GPIO_SCLK = 21;
+    int16_t GPIO_CS = 12;
+    int16_t GPIO_DC = 15;
+    int16_t GPIO_RESET = -1;
+    int16_t GPIO_BL = 2;
+    printf("GPIO_CS=%d", GPIO_CS);
+    if (GPIO_CS >= 0)
+    {
+        //gpio_pad_select_gpio( GPIO_CS );
+        gpio_reset_pin((gpio_num_t)GPIO_CS);
+        gpio_set_direction((gpio_num_t)GPIO_CS, GPIO_MODE_OUTPUT);
+        gpio_set_level((gpio_num_t)GPIO_CS, 0);
+    }
+
+    printf("GPIO_DC=%d", GPIO_DC);
+    //gpio_pad_select_gpio( GPIO_DC );
+    gpio_reset_pin((gpio_num_t)GPIO_DC);
+    gpio_set_direction((gpio_num_t)GPIO_DC, GPIO_MODE_OUTPUT);
+    gpio_set_level((gpio_num_t)GPIO_DC, 0);
+
+    printf("GPIO_RESET=%d", GPIO_RESET);
+    if (GPIO_RESET >= 0)
+    {
+        //gpio_pad_select_gpio( GPIO_RESET );
+        gpio_reset_pin((gpio_num_t)GPIO_RESET);
+        gpio_set_direction((gpio_num_t)GPIO_RESET, GPIO_MODE_OUTPUT);
+        gpio_set_level((gpio_num_t)GPIO_RESET, 1);
+        delayMS(50);
+        gpio_set_level((gpio_num_t)GPIO_RESET, 0);
+        delayMS(50);
+        gpio_set_level((gpio_num_t)GPIO_RESET, 1);
+        delayMS(50);
+    }
+
+    printf("GPIO_BL=%d", GPIO_BL);
+    if (GPIO_BL >= 0)
+    {
+        //gpio_pad_select_gpio(GPIO_BL);
+        gpio_reset_pin((gpio_num_t)GPIO_BL);
+        gpio_set_direction((gpio_num_t)GPIO_BL, GPIO_MODE_OUTPUT);
+        gpio_set_level((gpio_num_t)GPIO_BL, 0);
+    }
+
+    printf("GPIO_MOSI=%d", GPIO_MOSI);
+    printf("GPIO_SCLK=%d", GPIO_SCLK);
+    spi_bus_config_t buscfg = {
+        .mosi_io_num = GPIO_MOSI,
+        .miso_io_num = 22,
+        .sclk_io_num = GPIO_SCLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = 0,
+        .flags = 0};
+
+    ret = spi_bus_initialize(LCD_HOST, &buscfg, 1);
+    printf("spi_bus_initialize=%d\n", ret);
+    assert(ret == ESP_OK);
+
+    spi_device_interface_config_t devcfg;
+    memset(&devcfg, 0, sizeof(devcfg));
+    devcfg.clock_speed_hz = SPI_Frequency;
+    devcfg.queue_size = 7;
+    devcfg.mode = 2;
+    devcfg.flags = SPI_DEVICE_NO_DUMMY;
+
+    if (GPIO_CS >= 0)
+    {
+        devcfg.spics_io_num = GPIO_CS;
+    }
+    else
+    {
+        devcfg.spics_io_num = -1;
+    }
+
+    spi_device_handle_t handle;
+    ret = spi_bus_add_device(LCD_HOST, &devcfg, &handle);
+    // printf("spi_bus_add_device=%d",ret);
+    assert(ret == ESP_OK);
+    dev->_dc = GPIO_DC;
+    dev->_bl = GPIO_BL;
+    dev->_SPIHandle = handle;
+}
+
 extern "C" void app_main(void)
 {
     printf("Do Reset Camera\n");
@@ -211,8 +314,11 @@ extern "C" void app_main(void)
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
 
-    gpio_handler_create(server);
+    // TFT_t dev;
+    // printf("Start SPI for TFT \n");
+    // spi_master_init(&dev);
 
+    gpio_handler_create(server);
     printf("Start server main !!!\n");
     register_server_main_uri(server, "/sdcard");
 

@@ -1,4 +1,6 @@
-set(srcs "main/st7789.c"
+FILE(GLOB_RECURSE app_sources ${CMAKE_CURRENT_SOURCE_DIR}/*.*)
+
+idf_component_register(srcs "main/st7789.c"
     "main/fontx.c"
     "main/decode_png.c"
     "main/pngle.c"
