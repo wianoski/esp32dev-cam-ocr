@@ -117,6 +117,8 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("D:/work/esp32DevCam-Jomjol/build/esp-idf/jomjol_wlan/cmake_install.cmake")
   include("D:/work/esp32DevCam-Jomjol/build/esp-idf/jomjol_flowcontroll/cmake_install.cmake")
   include("D:/work/esp32DevCam-Jomjol/build/esp-idf/jomjol_controlGPIO/cmake_install.cmake")
+  include("D:/work/esp32DevCam-Jomjol/build/esp-idf/lvgl/cmake_install.cmake")
+  include("D:/work/esp32DevCam-Jomjol/build/esp-idf/lvgl_esp32_drivers/cmake_install.cmake")
   include("D:/work/esp32DevCam-Jomjol/build/esp-idf/protocol_examples_common/cmake_install.cmake")
 
 endif()

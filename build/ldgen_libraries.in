@@ -73,4 +73,6 @@ $<TARGET_FILE:__idf_jomjol_tfliteclass>
 $<TARGET_FILE:__idf_jomjol_wlan>
 $<TARGET_FILE:__idf_jomjol_flowcontroll>
 $<TARGET_FILE:__idf_jomjol_controlGPIO>
+$<TARGET_FILE:__idf_lvgl>
+$<TARGET_FILE:__idf_lvgl_esp32_drivers>
 $<TARGET_FILE:__idf_protocol_examples_common>

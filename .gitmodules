@@ -1,0 +1,18 @@
+[submodule "components/lvgl"]
+	path = components/lvgl
+	url = https://github.com/lvgl/lvgl.git
+[submodule "components/lvgl_esp32_drivers"]
+	path = components/lvgl_esp32_drivers
+	url = https://github.com/lvgl/lvgl_esp32_drivers.git
+[submodule "components/components/lvgl_esp32_drivers"]
+	path = components/components/lvgl_esp32_drivers
+	url = https://github.com/lvgl/lvgl_esp32_drivers.git
+[submodule "components/dump/lvgl_esp32_drivers"]
+	path = components/dump/lvgl_esp32_drivers
+	url = https://github.com/lvgl/lvgl_esp32_drivers.git
+[submodule "dump1/lvgl_esp32_drivers"]
+	path = dump1/lvgl_esp32_drivers
+	url = https://github.com/lvgl/lvgl_esp32_drivers.git
+[submodule "compts/lvgl"]
+	path = compts/lvgl
+	url = https://github.com/lvgl/lvgl.git

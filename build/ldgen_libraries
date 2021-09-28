@@ -73,4 +73,6 @@ D:/work/esp32DevCam-Jomjol/build/esp-idf/jomjol_tfliteclass/libjomjol_tfliteclas
 D:/work/esp32DevCam-Jomjol/build/esp-idf/jomjol_wlan/libjomjol_wlan.a
 D:/work/esp32DevCam-Jomjol/build/esp-idf/jomjol_flowcontroll/libjomjol_flowcontroll.a
 D:/work/esp32DevCam-Jomjol/build/esp-idf/jomjol_controlGPIO/libjomjol_controlGPIO.a
+D:/work/esp32DevCam-Jomjol/build/esp-idf/lvgl/liblvgl.a
+D:/work/esp32DevCam-Jomjol/build/esp-idf/lvgl_esp32_drivers/liblvgl_esp32_drivers.a
 D:/work/esp32DevCam-Jomjol/build/esp-idf/protocol_examples_common/libprotocol_examples_common.a

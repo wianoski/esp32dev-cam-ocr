@@ -1,0 +1,20 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "D:/program/esp-idf-v4.1.2/components/bootloader/subproject",
+    "build_dir":          "D:/work/esp32DevCam-Jomjol/build/bootloader",
+    "config_file":        "D:/work/esp32DevCam-Jomjol/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v4.1.2-dirty",
+    "target":             "esp32",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "D:/program/esp-idf-v4.1.2/components/efuse/Kconfig;D:/program/esp-idf-v4.1.2/components/esp32/Kconfig;D:/program/esp-idf-v4.1.2/components/esp_common/Kconfig;D:/program/esp-idf-v4.1.2/components/log/Kconfig;D:/program/esp-idf-v4.1.2/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "D:/program/esp-idf-v4.1.2/components/bootloader/Kconfig.projbuild;D:/program/esp-idf-v4.1.2/components/esptool_py/Kconfig.projbuild;D:/program/esp-idf-v4.1.2/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_rom", "esptool_py", "log", "main", "micro-ecc", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "D:/program/esp-idf-v4.1.2/components/bootloader", "D:/program/esp-idf-v4.1.2/components/bootloader_support", "D:/program/esp-idf-v4.1.2/components/efuse", "D:/program/esp-idf-v4.1.2/components/esp32", "D:/program/esp-idf-v4.1.2/components/esp_common", "D:/program/esp-idf-v4.1.2/components/esp_rom", "D:/program/esp-idf-v4.1.2/components/esptool_py", "D:/program/esp-idf-v4.1.2/components/log", "D:/program/esp-idf-v4.1.2/components/bootloader/subproject/main", "D:/program/esp-idf-v4.1.2/components/bootloader/subproject/components/micro-ecc", "D:/program/esp-idf-v4.1.2/components/partition_table", "D:/program/esp-idf-v4.1.2/components/soc", "D:/program/esp-idf-v4.1.2/components/spi_flash", "D:/program/esp-idf-v4.1.2/components/xtensa", "" ]
+}
