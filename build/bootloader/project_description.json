@@ -1,8 +1,8 @@
 {
     "project_name":       "bootloader",
     "project_path":       "D:/program/esp-idf-v4.1.2/components/bootloader/subproject",
-    "build_dir":          "D:/work/esp32DevCam-Jomjol/build/bootloader",
-    "config_file":        "D:/work/esp32DevCam-Jomjol/sdkconfig",
+    "build_dir":          "D:/work/esp32dev-cam-ocr/build/bootloader",
+    "config_file":        "D:/work/esp32dev-cam-ocr/sdkconfig",
     "config_defaults":    "",
     "app_elf":            "bootloader.elf",
     "app_bin":            "bootloader.bin",

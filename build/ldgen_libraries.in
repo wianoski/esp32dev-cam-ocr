@@ -68,11 +68,11 @@ $<TARGET_FILE:__idf_jomjol_configfile>
 $<TARGET_FILE:__idf_jomjol_mqtt>
 $<TARGET_FILE:__idf_jomjol_image_proc>
 $<TARGET_FILE:__idf_jomjol_fileserver_ota>
+$<TARGET_FILE:__idf_lvgl>
+$<TARGET_FILE:__idf_lvgl_esp32_drivers>
 $<TARGET_FILE:__idf_jomjol_controlcamera>
 $<TARGET_FILE:__idf_jomjol_tfliteclass>
 $<TARGET_FILE:__idf_jomjol_wlan>
 $<TARGET_FILE:__idf_jomjol_flowcontroll>
 $<TARGET_FILE:__idf_jomjol_controlGPIO>
-$<TARGET_FILE:__idf_lvgl>
-$<TARGET_FILE:__idf_lvgl_esp32_drivers>
 $<TARGET_FILE:__idf_protocol_examples_common>

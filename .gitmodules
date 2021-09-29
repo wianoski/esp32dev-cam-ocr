@@ -16,3 +16,9 @@
 [submodule "compts/lvgl"]
 	path = compts/lvgl
 	url = https://github.com/lvgl/lvgl.git
+[submodule "components/ds/lvgl"]
+	path = components/ds/lvgl
+	url = https://github.com/lvgl/lvgl.git
+[submodule "components/c/lvgl_esp32_drivers"]
+	path = components/c/lvgl_esp32_drivers
+	url = https://github.com/lvgl/lvgl_esp32_drivers.git

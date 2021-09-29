@@ -1,4 +1,4 @@
-# Install script for directory: D:/work/esp32DevCam-Jomjol/components/jomjol_wlan
+# Install script for directory: D:/work/esp32dev-cam-ocr/components/jomjol_wlan
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

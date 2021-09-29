@@ -1,4 +1,4 @@
-# Install script for directory: D:/work/esp32DevCam-Jomjol/components/jomjol_controlcamera
+# Install script for directory: D:/work/esp32dev-cam-ocr/components/jomjol_controlcamera
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

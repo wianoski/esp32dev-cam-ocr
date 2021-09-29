@@ -15487,6 +15487,16 @@
                                                 "range": null,
                                                 "title": "Allow buffering some shadow calculation",
                                                 "type": "int"
+                                            },
+                                            {
+                                                "children": [],
+                                                "depends_on": "LV_DRAW_COMPLEX",
+                                                "help": "The circumference of 1/4 circle are saved for anti-aliasing\nradius * 4 bytes are used per circle (the most often used\nradiuses are saved).\nSet to 0 to disable caching.",
+                                                "id": "LV_CIRCLE_CACHE_SIZE",
+                                                "name": "LV_CIRCLE_CACHE_SIZE",
+                                                "range": null,
+                                                "title": "Set number of maximally cached circle data",
+                                                "type": "int"
                                             }
                                         ],
                                         "depends_on": null,
@@ -15575,6 +15585,16 @@
                                         "name": "LV_USE_GPU_NXP_VG_LITE",
                                         "range": null,
                                         "title": "Use NXP's VG-Lite GPU iMX RTxxx platforms.",
+                                        "type": "bool"
+                                    },
+                                    {
+                                        "children": [],
+                                        "depends_on": null,
+                                        "help": null,
+                                        "id": "LV_USE_GPU_SDL",
+                                        "name": "LV_USE_GPU_SDL",
+                                        "range": null,
+                                        "title": "Use SDL renderer API",
                                         "type": "bool"
                                     }
                                 ],

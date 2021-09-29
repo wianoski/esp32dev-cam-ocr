@@ -34,8 +34,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("D:/work/esp32DevCam-Jomjol/build/esp-idf/mbedtls/mbedtls/library/cmake_install.cmake")
-  include("D:/work/esp32DevCam-Jomjol/build/esp-idf/mbedtls/mbedtls/include/cmake_install.cmake")
+  include("D:/work/esp32dev-cam-ocr/build/esp-idf/mbedtls/mbedtls/library/cmake_install.cmake")
+  include("D:/work/esp32dev-cam-ocr/build/esp-idf/mbedtls/mbedtls/include/cmake_install.cmake")
 
 endif()
 
