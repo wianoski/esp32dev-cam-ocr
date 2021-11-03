@@ -30,7 +30,6 @@
 #include "lvgl.h"
 #include "lvgl_helpers.h"
 
-
 #include "esp_camera.h"
 
 #define DEBUG_DETAIL_ON
