@@ -4,14 +4,13 @@
 #include "freertos/event_groups.h"
 
 #include "driver/gpio.h"
-#include "esp_log.h"
 #include "sdkconfig.h"
 
 // SD-Card ////////////////////
 #include "nvs_flash.h"
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
-#include "driver/sdspi_host.h"
+// #include "driver/sdspi_host.h"
 // #include "driver/sdmmc_host.h"
 #include "driver/sdmmc_defs.h"
 ///////////////////////////////
@@ -29,11 +28,16 @@
 #include "ClassControllCamera.h"
 #include "server_main.h"
 #include "server_camera.h"
+#include "Helper.h"
+
+// #include "jomjol_WS2812Slow.h"
+#include "SmartLeds.h"
 
 
 #define __SD_USE_ONE_LINE_MODE__
 
 #include "server_GPIO.h"
+
 
 #define BLINK_GPIO GPIO_NUM_33
 
@@ -58,6 +62,7 @@ bool Init_NVS_SDCard()
     // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
     // sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
     sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
+    
 
     // To use 1-line SD mode, uncomment the following line:
 
@@ -134,8 +139,9 @@ bool Init_NVS_SDCard()
 void task_NoSDBlink(void *pvParameter)
 {
     gpio_pad_select_gpio(BLINK_GPIO);
-    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
+    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
 
+    
     TickType_t xDelay;
     xDelay = 100 / portTICK_PERIOD_MS;
     printf("SD-Card could not be inialized - STOP THE PROGRAMM HERE\n");
@@ -143,23 +149,22 @@ void task_NoSDBlink(void *pvParameter)
     while (1)
     {
         gpio_set_level(BLINK_GPIO, 1);
-        vTaskDelay(xDelay);
-        gpio_set_level(BLINK_GPIO, 0);
-        vTaskDelay(xDelay);
+        vTaskDelay( xDelay );   
+        gpio_set_level(BLINK_GPIO, 0); 
+        vTaskDelay( xDelay );   
+
     }
     vTaskDelete(NULL); //Delete this task if it exits from the loop above
 }
 
+
 extern "C" void app_main(void)
 {
-    printf("Do Reset Camera\n");
-    PowerResetCamera();
-    Camera.InitCam();
-    Camera.LightOnOff(false);
-
+    TickType_t xDelay;
+ 
     if (!Init_NVS_SDCard())
     {
-        xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY + 1, NULL);
+        xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
         return;
     };
 
@@ -179,18 +184,19 @@ extern "C" void app_main(void)
         printf("Hostname not set.\n");
 
     if (ip != NULL && gateway != NULL && netmask != NULL)
-        printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip, gateway, netmask);
+       printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip, gateway, netmask);
     if (dns != NULL)
-        printf("DNS IP: %s\n", dns);
+       printf("DNS IP: %s\n", dns);
 
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);
 
-    TickType_t xDelay;
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
+
+
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long)xDelay);
-    //    LogFile.WriteToFile("Startsequence 06");
-    vTaskDelay(xDelay);
-    //    LogFile.WriteToFile("Startsequence 07");
+    printf("main: sleep for : %ldms\n", (long) xDelay);
+//    LogFile.WriteToFile("Startsequence 06");      
+    vTaskDelay( xDelay );   
+//    LogFile.WriteToFile("Startsequence 07");  
     setup_time();
     setBootTime();
     LogFile.WriteToFile("=============================================================================================");
@@ -198,29 +204,72 @@ extern "C" void app_main(void)
     LogFile.WriteToFile("=============================================================================================");
     LogFile.SwitchOnOff(false);
 
+
+
+
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    printf("time %s\n", zw.c_str());
+    printf("time %s\n", zw.c_str());    
 
-    //    Camera.InitCam();
-    //    Camera.LightOnOff(false);
-    xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long)xDelay);
-    vTaskDelay(xDelay);
+//    Camera.InitCam();
+//    Camera.LightOnOff(false);
+     xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("main: sleep for : %ldms\n", (long) xDelay);
+    vTaskDelay( xDelay ); 
 
-    server = start_webserver();
-    register_server_camera_uri(server);
+    server = start_webserver();   
+    register_server_camera_uri(server); 
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
 
-    // TFT_t dev;
-    // printf("Start SPI for TFT \n");
-    // spi_master_init(&dev);
-
     gpio_handler_create(server);
-    printf("Start server main !!!\n");
+
+    printf("vor reg server main\n");
     register_server_main_uri(server, "/sdcard");
 
-    printf("Start TFLite !!!\n");
-    TFliteDoAutoStart();
+    printf("vor dotautostart\n");
+
+    // init camera module
+    printf("Do Reset Camera\n");
+    PowerResetCamera();
+
+
+    size_t _hsize = getESPHeapSize();
+    if (_hsize < 4000000)
+    {
+                    std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
+                    _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
+                    printf(_zws.c_str());
+                    LogFile.SwitchOnOff(true);
+                    LogFile.WriteToFile(_zws);
+                    LogFile.SwitchOnOff(false);
+    } else {
+        esp_err_t cam = Camera.InitCam();
+        if (cam != ESP_OK) {
+                ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
+                    "Check that your camera module is working and connected properly.");
+
+                LogFile.SwitchOnOff(true);
+                LogFile.WriteToFile("Failed to initialize camera module. "
+                        "Check that your camera module is working and connected properly.");
+                LogFile.SwitchOnOff(false);
+        } else {
+// Test Camera            
+            camera_fb_t * fb = esp_camera_fb_get();
+            if (!fb) {
+                ESP_LOGE(TAGMAIN, "esp_camera_fb_get: Camera Capture Failed");
+                LogFile.SwitchOnOff(true);
+                LogFile.WriteToFile("Camera cannot be initialzed. "
+                        "System will reboot.");
+                doReboot();
+            }
+            esp_camera_fb_return(fb);   
+
+            Camera.LightOnOff(false);
+            TFliteDoAutoStart();
+        }
+    }
+
+
 }
+

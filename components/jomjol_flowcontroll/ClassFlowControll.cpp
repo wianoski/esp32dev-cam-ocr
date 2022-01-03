@@ -35,10 +35,10 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     if ((_stepname.compare(0, 7, "[Digits") == 0) || (_stepname.compare(0, 8, ";[Digits") == 0)) {
 //    if ((_stepname.compare("[Digits]") == 0) || (_stepname.compare(";[Digits]") == 0)){
 //        printf("Digits!!!\n");
-        _classname = "ClassFlowDigit";
+        _classname = "ClassFlowCNNGeneral";
     }
     if ((_stepname.compare("[Analog]") == 0) || (_stepname.compare(";[Analog]") == 0)){
-        _classname = "ClassFlowAnalog";
+        _classname = "ClassFlowCNNGeneral";
     }
     if ((_stepname.compare("[MQTT]") == 0) || (_stepname.compare(";[MQTT]") == 0)){
         _classname = "ClassFlowMQTT";
@@ -54,16 +54,17 @@ std::string ClassFlowControll::doSingleStep(std::string _stepname, std::string _
     return result;
 }
 
+
 std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 {
     if (_input.compare("ClassFlowMakeImage") == 0)
         return ("Take Image");
     if (_input.compare("ClassFlowAlignment") == 0)
         return ("Aligning");
-    if (_input.compare("ClassFlowAnalog") == 0)
-        return ("Analog ROIs");
-    if (_input.compare("ClassFlowDigit") == 0)
-        return ("Digital ROIs");
+    //if (_input.compare("ClassFlowAnalog") == 0)
+    //    return ("Analog ROIs");
+    if (_input.compare("ClassFlowCNNGeneral") == 0)
+        return ("Digitalization of ROIs");
     if (_input.compare("ClassFlowMQTT") == 0)
         return ("Sending MQTT");
     if (_input.compare("ClassFlowPostProcessing") == 0)
@@ -73,11 +74,13 @@ std::string ClassFlowControll::TranslateAktstatus(std::string _input)
 }
 
 
-std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
+std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital() 
 {
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowDigit") == 0)
-            return ((ClassFlowDigit*) (FlowControll[i]))->GetHTMLInfo();
+    if (flowdigit)
+    {
+        printf("ClassFlowControll::GetAllDigital - flowdigit != NULL\n");
+        return flowdigit->GetHTMLInfo();
+    }
 
     std::vector<HTMLInfo*> empty;
     return empty;
@@ -85,13 +88,29 @@ std::vector<HTMLInfo*> ClassFlowControll::GetAllDigital()
 
 std::vector<HTMLInfo*> ClassFlowControll::GetAllAnalog()
 {
-    for (int i = 0; i < FlowControll.size(); ++i)
-        if (FlowControll[i]->name().compare("ClassFlowAnalog") == 0)
-            return ((ClassFlowAnalog*) (FlowControll[i]))->GetHTMLInfo();
+    if (flowanalog)
+        return flowanalog->GetHTMLInfo();
 
     std::vector<HTMLInfo*> empty;
     return empty;
 }
+
+t_CNNType ClassFlowControll::GetTypeDigital()
+{
+    if (flowdigit)
+        return flowdigit->getCNNType();
+
+    return t_CNNType::None;
+}
+
+t_CNNType ClassFlowControll::GetTypeAnalog()
+{
+    if (flowanalog)
+        return flowanalog->getCNNType();
+
+    return t_CNNType::None;
+}
+
 
 
 
@@ -145,20 +164,20 @@ ClassFlow* ClassFlowControll::CreateClassFlow(std::string _type)
     }
     if (toUpper(_type).compare("[ANALOG]") == 0)
     {
-        cfc = new ClassFlowAnalog(&FlowControll);
-        flowanalog = (ClassFlowAnalog*) cfc;
+        cfc = new ClassFlowCNNGeneral(flowalignment);
+        flowanalog = (ClassFlowCNNGeneral*) cfc;
     }
     if (toUpper(_type).compare(0, 7, "[DIGITS") == 0)
     {
-        cfc = new ClassFlowDigit(&FlowControll);
-        flowdigit = (ClassFlowDigit*) cfc;
+        cfc = new ClassFlowCNNGeneral(flowalignment);
+        flowdigit = (ClassFlowCNNGeneral*) cfc;
     }
     if (toUpper(_type).compare("[MQTT]") == 0)
         cfc = new ClassFlowMQTT(&FlowControll);
         
     if (toUpper(_type).compare("[POSTPROCESSING]") == 0)
     {
-        cfc = new ClassFlowPostProcessing(&FlowControll); 
+        cfc = new ClassFlowPostProcessing(&FlowControll, flowanalog, flowdigit); 
         flowpostprocessing = (ClassFlowPostProcessing*) cfc;
     }
 
@@ -203,7 +222,7 @@ void ClassFlowControll::InitFlow(std::string config)
         cfc = CreateClassFlow(line);
         if (cfc)
         {
-            printf("Start ReadParameter\n");
+            printf("Start ReadParameter (%s)\n", line.c_str());
             cfc->ReadParameter(pFile, line);
         }
         else
@@ -221,8 +240,8 @@ void ClassFlowControll::InitFlow(std::string config)
 
 }
 
-std::string ClassFlowControll::getActStatus(){
-    return aktstatus;
+std::string* ClassFlowControll::getActStatus(){
+    return &aktstatus;
 }
 
 void ClassFlowControll::doFlowMakeImageOnly(string time){
@@ -254,7 +273,7 @@ bool ClassFlowControll::doFlow(string time)
     for (int i = 0; i < FlowControll.size(); ++i)
     {
         zw_time = gettimestring("%H:%M:%S");
-        aktstatus = TranslateAktstatus(FlowControll[i]->name()) + "(" + zw_time + ")";
+        aktstatus = TranslateAktstatus(FlowControll[i]->name()) + " (" + zw_time + ")";
 
 //        zw_time = gettimestring("%Y%m%d-%H%M%S");
 //        aktstatus = zw_time + ": " + FlowControll[i]->name();
@@ -266,7 +285,7 @@ bool ClassFlowControll::doFlow(string time)
         if (!FlowControll[i]->doFlow(time)){
             repeat++;
             LogFile.WriteToFile("Fehler im vorheriger Schritt - wird zum " + to_string(repeat) + ". Mal wiederholt");
-            i = -1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
+            if (i) i -= 1;    // vorheriger Schritt muss wiederholt werden (vermutlich Bilder aufnehmen)
             result = false;
             if (repeat > 5) {
                 LogFile.WriteToFile("Wiederholung 5x nicht erfolgreich --> reboot");
@@ -292,39 +311,41 @@ bool ClassFlowControll::doFlow(string time)
 
 string ClassFlowControll::getReadoutAll(int _type)
 {
-    std::vector<NumberPost*> numbers = flowpostprocessing->GetNumbers();
     std::string out = "";
-
-    for (int i = 0; i < numbers.size(); ++i)
+    if (flowpostprocessing)
     {
-        out = out + numbers[i]->name + "\t";
-        switch (_type) {
-            case READOUT_TYPE_VALUE:
-                out = out + numbers[i]->ReturnValueNoError;
-                break;
-            case READOUT_TYPE_PREVALUE:
-                if (flowpostprocessing->PreValueUse)
-                {
-                    if (numbers[i]->PreValueOkay)
-                        out = out + numbers[i]->ReturnPreValue;
-                    else
-                        out = out + "PreValue too old";                
-                }
-                else
-                    out = out + "PreValue deactivated";
-                break;
-            case READOUT_TYPE_RAWVALUE:
-                out = out + numbers[i]->ReturnRawValue;
-                break;
-            case READOUT_TYPE_ERROR:
-                out = out + numbers[i]->ErrorMessageText;
-                break;
-        }
-        if (i < numbers.size()-1)
-            out = out + "\r\n";
-    }
+        std::vector<NumberPost*> *numbers = flowpostprocessing->GetNumbers();
 
-//    printf("OUT: %s", out.c_str());
+        for (int i = 0; i < (*numbers).size(); ++i)
+        {
+            out = out + (*numbers)[i]->name + "\t";
+            switch (_type) {
+                case READOUT_TYPE_VALUE:
+                    out = out + (*numbers)[i]->ReturnValueNoError;
+                    break;
+                case READOUT_TYPE_PREVALUE:
+                    if (flowpostprocessing->PreValueUse)
+                    {
+                        if ((*numbers)[i]->PreValueOkay)
+                            out = out + (*numbers)[i]->ReturnPreValue;
+                        else
+                            out = out + "PreValue too old";                
+                    }
+                    else
+                        out = out + "PreValue deactivated";
+                    break;
+                case READOUT_TYPE_RAWVALUE:
+                    out = out + (*numbers)[i]->ReturnRawValue;
+                    break;
+                case READOUT_TYPE_ERROR:
+                    out = out + (*numbers)[i]->ErrorMessageText;
+                    break;
+            }
+            if (i < (*numbers).size()-1)
+                out = out + "\r\n";
+        }
+    //    printf("OUT: %s", out.c_str());
+    }
 
     return out;
 }	
@@ -533,65 +554,59 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     {
         _send = flowalignment->ImageBasis;  
     }
-
-
-
-    if (_fn == "alg_roi.jpg")
+    else
     {
-        CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
-        flowalignment->DrawRef(_imgzw);
-        if (flowdigit) flowdigit->DrawROI(_imgzw);
-        if (flowanalog) flowanalog->DrawROI(_imgzw);
+        if (_fn == "alg_roi.jpg")
+        {
+            CImageBasis* _imgzw = new CImageBasis(flowalignment->ImageBasis);
+            flowalignment->DrawRef(_imgzw);
+            if (flowdigit) flowdigit->DrawROI(_imgzw);
+            if (flowanalog) flowanalog->DrawROI(_imgzw);
+            _send = _imgzw;
+            Dodelete = true;
+        }
+        else
+        {
+            std::vector<HTMLInfo*> htmlinfo;
+            htmlinfo = GetAllDigital();
+            for (int i = 0; i < htmlinfo.size(); ++i)
+            {
+                if (_fn == htmlinfo[i]->filename)
+                {
+                    if (htmlinfo[i]->image)
+                        _send = htmlinfo[i]->image;
+                }
+                if (_fn == htmlinfo[i]->filename_org)
+                {
+                    if (htmlinfo[i]->image_org)
+                        _send = htmlinfo[i]->image_org;        
+                }
+                delete htmlinfo[i];
+            }
+            htmlinfo.clear();
 
-/*/////////////////////////////////////        
-        cimg_library::CImg<unsigned char> cimg(_imgzw->rgb_image, _imgzw->bpp, _imgzw->width, _imgzw->height, 1);
-    
-        //Convert cimg type
-//        cimg.permute_axes("yzcx");
-        cimg.draw_text(300, 300, "Dies ist ein Test", "black");
+            if (!_send)
+            {
+                htmlinfo = GetAllAnalog();
+                for (int i = 0; i < htmlinfo.size(); ++i)
+                {
+                    if (_fn == htmlinfo[i]->filename)
+                    {
+                        if (htmlinfo[i]->image)
+                            _send = htmlinfo[i]->image;
+                    }
+                    if (_fn == htmlinfo[i]->filename_org)
+                    {
+                        if (htmlinfo[i]->image_org)
+                            _send = htmlinfo[i]->image_org;        
+                    }
+                    delete htmlinfo[i];
+                }
+                htmlinfo.clear();
 
-        
-        //Convert back to stb type to save
-//        cimg.permute_axes("cxyz");
-*////////////////////////////////////
-        _send = _imgzw;
-        Dodelete = true;
+            }
+        }
     }
-
-    std::vector<HTMLInfo*> htmlinfo;
-    htmlinfo = GetAllDigital();
-    for (int i = 0; i < htmlinfo.size(); ++i)
-    {
-        if (_fn == htmlinfo[i]->filename)
-        {
-            if (htmlinfo[i]->image)
-                _send = htmlinfo[i]->image;
-        }
-        if (_fn == htmlinfo[i]->filename_org)
-        {
-            if (htmlinfo[i]->image_org)
-                _send = htmlinfo[i]->image_org;        
-        }
-        delete htmlinfo[i];
-    }
-    htmlinfo.clear();
-
-    htmlinfo = GetAllAnalog();
-    for (int i = 0; i < htmlinfo.size(); ++i)
-    {
-        if (_fn == htmlinfo[i]->filename)
-        {
-            if (htmlinfo[i]->image)
-                _send = htmlinfo[i]->image;
-        }
-        if (_fn == htmlinfo[i]->filename_org)
-        {
-            if (htmlinfo[i]->image_org)
-                _send = htmlinfo[i]->image_org;        
-        }
-        delete htmlinfo[i];
-    }
-    htmlinfo.clear();
 
     if (_send)
     {
@@ -609,4 +624,37 @@ esp_err_t ClassFlowControll::GetJPGStream(std::string _fn, httpd_req_t *req)
     }
 
     return result;
+}
+
+
+string ClassFlowControll::getJSON()
+{
+    std::vector<NumberPost*>* NUMBERS = flowpostprocessing->GetNumbers();
+
+    std::string json="{\n";
+
+    for (int i = 0; i < (*NUMBERS).size(); ++i)
+    {
+        json += "\"" + (*NUMBERS)[i]->name + "\":\n";
+        json += "  {\n";
+        if ((*NUMBERS)[i]->ReturnValueNoError.length() > 0)
+            json += "    \"value\": "      + (*NUMBERS)[i]->ReturnValueNoError          + ",\n";
+        else
+            json += "    \"value\": \"\",\n";
+        json += "    \"raw\": \""        + (*NUMBERS)[i]->ReturnRawValue              + "\",\n";
+        json += "    \"error\": \""     + (*NUMBERS)[i]->ErrorMessageText             + "\",\n";
+        if ((*NUMBERS)[i]->ReturnRateValue.length() > 0)
+            json += "    \"rate\": "      + (*NUMBERS)[i]->ReturnRateValue                + ",\n";
+        else
+            json += "    \"rate\": \"\",\n";
+
+        json += "    \"timestamp\": \"" + (*NUMBERS)[i]->timeStamp                    + "\"\n";
+        if ((i+1) < (*NUMBERS).size())
+            json += "  },\n";
+        else
+            json += "  }\n";
+    }
+    json += "}";
+
+    return json;
 }

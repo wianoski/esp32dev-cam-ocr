@@ -80,20 +80,23 @@ void memCopyGen(uint8_t* _source, uint8_t* _target, int _size)
 
 FILE* OpenFileAndWait(const char* nm, const char* _mode, int _waitsec)
 {
-	printf("open config file %s in mode %s\n", nm, _mode);
+	printf("open file %s in mode %s\n", nm, _mode);
 	FILE *pfile = fopen(nm, _mode);
 
+/*
 	if (pfile == NULL)
 	{
 		TickType_t xDelay;
 		xDelay = _waitsec * 1000 / portTICK_PERIOD_MS;
-		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec);
+		std::string zw = "File is locked: " + std::string(nm) + " - wait for " + std::to_string(_waitsec) + " seconds";
 	    printf(zw.c_str());
 		printf("\n");
 		LogFile.WriteToFile(zw);      
 		vTaskDelay( xDelay );
 		pfile = fopen(nm, _mode);
 	}
+*/
+
 	return pfile;
 }
 

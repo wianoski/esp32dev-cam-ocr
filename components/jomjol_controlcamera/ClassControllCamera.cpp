@@ -27,8 +27,8 @@
 #include "freertos/task.h"
 
 //ST7789 setup
-#include "lvgl.h"
-#include "lvgl_helpers.h"
+// #include "lvgl.h"
+// #include "lvgl_helpers.h"
 
 #include "esp_camera.h"
 

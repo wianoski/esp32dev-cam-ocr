@@ -20,16 +20,13 @@
 #include "ClassLogFile.h"
 #include "server_GPIO.h"
 
-#define DEBUG_DETAIL_ON       
+// #define DEBUG_DETAIL_ON       
 
 
 ClassFlowControll tfliteflow;
 
 TaskHandle_t xHandleblink_task_doFlow = NULL;
 TaskHandle_t xHandletask_autodoFlow = NULL;
-
-
-
 
 bool flowisrunning = false;
 
@@ -192,6 +189,36 @@ esp_err_t handler_doflow(httpd_req_t *req)
 };
 
 
+esp_err_t handler_json(httpd_req_t *req)
+{
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_json - Start");    
+#endif
+
+
+    printf("handler_JSON uri:\n"); printf(req->uri); printf("\n");
+
+    char _query[100];
+    char _size[10];
+
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_type(req, "application/json");
+
+    std::string zw = tfliteflow.getJSON();
+    if (zw.length() > 0)
+        httpd_resp_sendstr_chunk(req, zw.c_str()); 
+
+    string query = std::string(_query);
+
+    /* Respond with an empty chunk to signal HTTP response completion */
+    httpd_resp_sendstr_chunk(req, NULL);   
+
+#ifdef DEBUG_DETAIL_ON       
+    LogFile.WriteHeapInfo("handler_JSON - Done");   
+#endif
+    return ESP_OK;
+};
+
 
 
 esp_err_t handler_wasserzaehler(httpd_req_t *req)
@@ -283,37 +310,48 @@ esp_err_t handler_wasserzaehler(httpd_req_t *req)
         txt = txt + "Digital Counter: <p> ";
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
-        std::vector<HTMLInfo*> htmlinfo;
-        htmlinfo = tfliteflow.GetAllDigital();
-        for (int i = 0; i < htmlinfo.size(); ++i)
+        std::vector<HTMLInfo*> htmlinfodig;
+        htmlinfodig = tfliteflow.GetAllDigital();  
+        for (int i = 0; i < htmlinfodig.size(); ++i)
         {
-            if (htmlinfo[i]->val == 10)
-                zw = "NaN";
+            if (tfliteflow.GetTypeDigital() == Digital)
+            {
+                if (htmlinfodig[i]->val == 10)
+                    zw = "NaN";
+                else
+                    zw = to_string((int) htmlinfodig[i]->val);
+
+                txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
+            }
             else
             {
-                zw = to_string((int) htmlinfo[i]->val);
+                std::stringstream stream;
+                stream << std::fixed << std::setprecision(1) << htmlinfodig[i]->val;
+                zw = stream.str();
+
+                txt = "<img src=\"/img_tmp/" +  htmlinfodig[i]->filename + "\"> " + zw;
             }
-            txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
             httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            delete htmlinfo[i];
+            delete htmlinfodig[i];
         }
-        htmlinfo.clear();
+        htmlinfodig.clear();
       
         txt = " <p> Analog Meter: <p> ";
         httpd_resp_sendstr_chunk(req, txt.c_str()); 
         
-        htmlinfo = tfliteflow.GetAllAnalog();
-        for (int i = 0; i < htmlinfo.size(); ++i)
+        std::vector<HTMLInfo*> htmlinfoana;
+        htmlinfoana = tfliteflow.GetAllAnalog();
+        for (int i = 0; i < htmlinfoana.size(); ++i)
         {
             std::stringstream stream;
-            stream << std::fixed << std::setprecision(1) << htmlinfo[i]->val;
+            stream << std::fixed << std::setprecision(1) << htmlinfoana[i]->val;
             zw = stream.str();
 
-            txt = "<img src=\"/img_tmp/" +  htmlinfo[i]->filename + "\"> " + zw;
+            txt = "<img src=\"/img_tmp/" +  htmlinfoana[i]->filename + "\"> " + zw;
             httpd_resp_sendstr_chunk(req, txt.c_str()); 
-            delete htmlinfo[i];
+            delete htmlinfoana[i];
         }
-        htmlinfo.clear();   
+        htmlinfoana.clear();   
 
     }   
 
@@ -493,31 +531,7 @@ esp_err_t handler_editflow(httpd_req_t *req)
 //        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
         std::string zw = tfliteflow.doSingleStep("[Alignment]", _host);
         httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }  
-    if (_task.compare("test_analog") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Analog]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    }  
-    if (_task.compare("test_digits") == 0)
-    {
-        std::string _host = "";
-        if (httpd_query_key_value(_query, "host", _valuechar, 30) == ESP_OK) {
-            _host = std::string(_valuechar);
-        }
-//        printf("Parameter host: "); printf(_host.c_str()); printf("\n"); 
-
-//        string zwzw = "Do " + _task + " start\n"; printf(zwzw.c_str());
-        std::string zw = tfliteflow.doSingleStep("[Digits]", _host);
-        httpd_resp_sendstr_chunk(req, zw.c_str()); 
-    } 
-
+    }
 
     /* Respond with an empty chunk to signal HTTP response completion */
     httpd_resp_sendstr_chunk(req, NULL);   
@@ -537,15 +551,13 @@ esp_err_t handler_statusflow(httpd_req_t *req)
 #endif
 
     const char* resp_str;
-    string zw;
 
 #ifdef DEBUG_DETAIL_ON       
     printf("handler_prevalue:\n"); printf(req->uri); printf("\n");
 #endif
 
-    zw = tfliteflow.getActStatus();
-    
-    resp_str = zw.c_str();
+    string* zw = tfliteflow.getActStatus();
+    resp_str = zw->c_str();
 
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_send(req, resp_str, strlen(resp_str));   
@@ -682,8 +694,23 @@ void task_autodoFlow(void *pvParameter)
 
 void TFliteDoAutoStart()
 {
-    printf("Start Task!!!\n");
-    xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    BaseType_t xReturned;
+
+    int _i = configMINIMAL_STACK_SIZE;
+
+    printf("task_autodoFlow configMINIMAL_STACK_SIZE: %d\n", _i);
+    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+
+    xReturned = xTaskCreate(&task_autodoFlow, "task_autodoFlow", configMINIMAL_STACK_SIZE * 60, NULL, tskIDLE_PRIORITY+1, &xHandletask_autodoFlow);
+    if( xReturned != pdPASS )
+    {
+
+       //Memory: 64 --> 48 --> 35 --> 25
+       printf("ERROR task_autodoFlow konnte nicht erzeugt werden !!\r\n");
+    }
+    printf("getESPHeapInfo: %s\n", getESPHeapInfo().c_str());
+
+
 }
 
 std::string GetMQTTMainTopic()
@@ -729,4 +756,10 @@ void register_server_tflite_uri(httpd_handle_t server)
     camuri.handler   = handler_wasserzaehler;
     camuri.user_ctx  = (void*) "Wasserzaehler"; 
     httpd_register_uri_handler(server, &camuri);  
+
+    camuri.uri       = "/json";
+    camuri.handler   = handler_json;
+    camuri.user_ctx  = (void*) "JSON"; 
+    httpd_register_uri_handler(server, &camuri);     
+
 }

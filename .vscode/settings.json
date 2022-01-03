@@ -1,5 +1,3 @@
 {
-    "files.associations": {
-        "lvgl_spi_conf.h": "c"
-    }
+    "idf.adapterTargetName": "esp32"
 }

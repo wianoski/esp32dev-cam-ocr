@@ -1,5 +1,0 @@
-source "D:/program/esp-idf-v4.1.2/components/app_update/Kconfig.projbuild"
-source "D:/program/esp-idf-v4.1.2/components/bootloader/Kconfig.projbuild"
-source "D:/program/esp-idf-v4.1.2/components/esptool_py/Kconfig.projbuild"
-source "D:/program/esp-idf-v4.1.2/components/partition_table/Kconfig.projbuild"
-source "D:/program/esp-idf-v4.1.2/examples/common_components/protocol_examples_common/Kconfig.projbuild"

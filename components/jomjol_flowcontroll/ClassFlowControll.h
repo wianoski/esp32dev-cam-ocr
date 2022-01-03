@@ -1,14 +1,15 @@
-#pragma once
+#ifndef __FLOWCONTROLL__
+#define __FLOWCONTROLL__
 
 #include <string>
 
 #include "ClassFlow.h"
 #include "ClassFlowMakeImage.h"
 #include "ClassFlowAlignment.h"
-#include "ClassFlowDigit.h"
-#include "ClassFlowAnalog.h"
+#include "ClassFlowCNNGeneral.h"
 #include "ClassFlowPostProcessing.h"
 #include "ClassFlowMQTT.h"
+#include "ClassFlowCNNGeneral.h"
 
 
 #define READOUT_TYPE_VALUE 0
@@ -24,8 +25,9 @@ protected:
 	std::vector<ClassFlow*> FlowControll;
 	ClassFlowPostProcessing* flowpostprocessing;
 	ClassFlowAlignment* flowalignment;	
-	ClassFlowAnalog* flowanalog;
-	ClassFlowDigit* flowdigit;
+	ClassFlowCNNGeneral* flowanalog;
+	ClassFlowCNNGeneral* flowdigit;
+//	ClassFlowDigit* flowdigit;
 	ClassFlowMakeImage* flowmakeimage;
 	ClassFlow* CreateClassFlow(std::string _type);
 
@@ -46,6 +48,7 @@ public:
 	string UpdatePrevalue(std::string _newvalue, std::string _numbers, bool _extern);
 	string GetPrevalue(std::string _number = "");	
 	bool ReadParameter(FILE* pfile, string& aktparamgraph);	
+	string getJSON();
 
 	string TranslateAktstatus(std::string _input);
 
@@ -58,14 +61,19 @@ public:
 
 	bool isAutoStart(long &_intervall);
 
-	std::string getActStatus();
+	std::string* getActStatus();
 
 	std::vector<HTMLInfo*> GetAllDigital();
 	std::vector<HTMLInfo*> GetAllAnalog();	
+
+	t_CNNType GetTypeDigital();
+	t_CNNType GetTypeAnalog();
 
 	int CleanTempFolder();
 
 	string name(){return "ClassFlowControll";};
 };
+
+#endif
 
 

@@ -46,6 +46,9 @@ class CTfLiteClass
         int kTensorArenaSize;
         uint8_t *tensor_arena;
 
+        unsigned char *modelload = NULL;
+
+
         float* input;
         int input_i;
         int im_height, im_width, im_channel;
@@ -61,8 +64,11 @@ class CTfLiteClass
         void GetInputTensorSize();
         bool LoadInputImageBasis(CImageBasis *rs);
         void Invoke();
-        void GetOutPut();
-        int GetOutClassification();
+        int GetAnzOutPut(bool silent = true);        
+//        void GetOutPut();
+//        int GetOutClassification();
+        int GetOutClassification(int _von = -1, int _bis = -1);
+
         int GetClassFromImageBasis(CImageBasis *rs);
         std::string GetStatusFlow();
 
