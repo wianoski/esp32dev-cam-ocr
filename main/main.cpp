@@ -7,12 +7,21 @@
 #include "sdkconfig.h"
 
 // SD-Card ////////////////////
+#include <sys/unistd.h>
+#include <sys/stat.h>
 #include "nvs_flash.h"
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 // #include "driver/sdspi_host.h"
 // #include "driver/sdmmc_host.h"
-#include "driver/sdmmc_defs.h"
+// #include "driver/sdmmc_defs.h"
+
+#define PIN_NUM_MISO 22
+#define PIN_NUM_MOSI 19
+#define PIN_NUM_CLK 21
+#define PIN_NUM_CS 0
+#define SPI_DMA_CHAN 1
+
 ///////////////////////////////
 
 #include "ClassLogFile.h"
@@ -33,11 +42,9 @@
 // #include "jomjol_WS2812Slow.h"
 #include "SmartLeds.h"
 
-
 #define __SD_USE_ONE_LINE_MODE__
 
 #include "server_GPIO.h"
-
 
 #define BLINK_GPIO GPIO_NUM_33
 
@@ -56,41 +63,30 @@ bool Init_NVS_SDCard()
     ////////////////////////////////////////////////
 
     ESP_LOGI(TAGMAIN, "Using SDSPI peripheral");
+    sdmmc_card_t *card;
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    spi_bus_config_t bus_cfg = {
+        .mosi_io_num = GPIO_NUM_19,
+        .miso_io_num = GPIO_NUM_22,
+        .sclk_io_num = GPIO_NUM_21,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = 10000,
+    };
+    ret = spi_bus_initialize(HSPI_HOST, &bus_cfg, SPI_DMA_CHAN);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGI(TAGMAIN, "Failed to initialize bus.");
+        return false;
+    }
 
     // This initializes the slot without card detect (CD) and write protect (WP) signals.
     // Modify slot_config.gpio_cd and slot_config.gpio_wp if your board has these signals.
     // sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
-    sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
-    
-
-    // To use 1-line SD mode, uncomment the following line:
-
-#ifdef __SD_USE_ONE_LINE_MODE__
+    sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = GPIO_NUM_0;
-    slot_config.gpio_miso = GPIO_NUM_22;
-    slot_config.gpio_mosi = GPIO_NUM_19;
-    slot_config.gpio_sck = GPIO_NUM_21;
+    slot_config.host_id = SPI2_HOST;
 
-#endif
-
-    //pin for ttgo-camera plus
-    /*
-    CMD  ---> CMD-MOSI-19
-    CLK  ---> CLK-SCK-21
-    DAT0 ---> SDO-MISO-22
-    */
-
-    // GPIOs 15, 2, 4, 12, 13 should have external 10k pull-ups.
-    // Internal pull-ups are not sufficient. However, enabling internal pull-ups
-    // does make a difference some boards, so we do that here.
-    gpio_set_pull_mode(GPIO_NUM_19, GPIO_PULLUP_ONLY); // CMD, needed in 4- and 1- line modes
-    gpio_set_pull_mode(GPIO_NUM_22, GPIO_PULLUP_ONLY); // D0, needed in 4- and 1-line modes
-#ifndef __SD_USE_ONE_LINE_MODE__
-    gpio_set_pull_mode(GPIO_NUM_4, GPIO_PULLUP_ONLY);  // D1, needed in 4-line mode only
-    gpio_set_pull_mode(GPIO_NUM_12, GPIO_PULLUP_ONLY); // D2, needed in 4-line mode only
-#endif
-    gpio_set_pull_mode(GPIO_NUM_13, GPIO_PULLUP_ONLY); // D3, needed in 4- and 1-line modes
 
     // Options for mounting the filesystem.
     // If format_if_mount_failed is set to true, SD card will be partitioned and
@@ -104,9 +100,7 @@ bool Init_NVS_SDCard()
     // Note: esp_vfs_fat_sdmmc_mount is an all-in-one convenience function.
     // Please check its source code and implement error recovery when developing
     // production applications.
-    sdmmc_card_t *card;
-    ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &card);
-
+    ret = esp_vfs_fat_sdspi_mount("/sdcard", &host, &slot_config, &mount_config, &card);
     if (ret != ESP_OK)
     {
         if (ret == ESP_FAIL)
@@ -139,9 +133,8 @@ bool Init_NVS_SDCard()
 void task_NoSDBlink(void *pvParameter)
 {
     gpio_pad_select_gpio(BLINK_GPIO);
-    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);  
+    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
 
-    
     TickType_t xDelay;
     xDelay = 100 / portTICK_PERIOD_MS;
     printf("SD-Card could not be inialized - STOP THE PROGRAMM HERE\n");
@@ -149,22 +142,20 @@ void task_NoSDBlink(void *pvParameter)
     while (1)
     {
         gpio_set_level(BLINK_GPIO, 1);
-        vTaskDelay( xDelay );   
-        gpio_set_level(BLINK_GPIO, 0); 
-        vTaskDelay( xDelay );   
-
+        vTaskDelay(xDelay);
+        gpio_set_level(BLINK_GPIO, 0);
+        vTaskDelay(xDelay);
     }
-    vTaskDelete(NULL); //Delete this task if it exits from the loop above
+    vTaskDelete(NULL); // Delete this task if it exits from the loop above
 }
-
 
 extern "C" void app_main(void)
 {
     TickType_t xDelay;
- 
+
     if (!Init_NVS_SDCard())
     {
-        xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY+1, NULL);
+        xTaskCreate(&task_NoSDBlink, "task_NoSDBlink", configMINIMAL_STACK_SIZE * 64, NULL, tskIDLE_PRIORITY + 1, NULL);
         return;
     };
 
@@ -184,19 +175,17 @@ extern "C" void app_main(void)
         printf("Hostname not set.\n");
 
     if (ip != NULL && gateway != NULL && netmask != NULL)
-       printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip, gateway, netmask);
+        printf("Fixed IP: %s, Gateway %s, Netmask %s\n", ip, gateway, netmask);
     if (dns != NULL)
-       printf("DNS IP: %s\n", dns);
+        printf("DNS IP: %s\n", dns);
 
-
-    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);   
-
+    wifi_init_sta(ssid, passwd, hostname, ip, gateway, netmask, dns);
 
     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long) xDelay);
-//    LogFile.WriteToFile("Startsequence 06");      
-    vTaskDelay( xDelay );   
-//    LogFile.WriteToFile("Startsequence 07");  
+    printf("main: sleep for : %ldms\n", (long)xDelay);
+    //    LogFile.WriteToFile("Startsequence 06");
+    vTaskDelay(xDelay);
+    //    LogFile.WriteToFile("Startsequence 07");
     setup_time();
     setBootTime();
     LogFile.WriteToFile("=============================================================================================");
@@ -204,20 +193,17 @@ extern "C" void app_main(void)
     LogFile.WriteToFile("=============================================================================================");
     LogFile.SwitchOnOff(false);
 
-
-
-
     std::string zw = gettimestring("%Y%m%d-%H%M%S");
-    printf("time %s\n", zw.c_str());    
+    printf("time %s\n", zw.c_str());
 
-//    Camera.InitCam();
-//    Camera.LightOnOff(false);
-     xDelay = 2000 / portTICK_PERIOD_MS;
-    printf("main: sleep for : %ldms\n", (long) xDelay);
-    vTaskDelay( xDelay ); 
+    //    Camera.InitCam();
+    //    Camera.LightOnOff(false);
+    xDelay = 2000 / portTICK_PERIOD_MS;
+    printf("main: sleep for : %ldms\n", (long)xDelay);
+    vTaskDelay(xDelay);
 
-    server = start_webserver();   
-    register_server_camera_uri(server); 
+    server = start_webserver();
+    register_server_camera_uri(server);
     register_server_tflite_uri(server);
     register_server_file_uri(server, "/sdcard");
     register_server_ota_sdcard_uri(server);
@@ -233,43 +219,45 @@ extern "C" void app_main(void)
     printf("Do Reset Camera\n");
     PowerResetCamera();
 
-
     size_t _hsize = getESPHeapSize();
     if (_hsize < 4000000)
     {
-                    std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
-                    _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
-                    printf(_zws.c_str());
-                    LogFile.SwitchOnOff(true);
-                    LogFile.WriteToFile(_zws);
-                    LogFile.SwitchOnOff(false);
-    } else {
+        std::string _zws = "Not enought PSRAM available. Expected 4.194.304 MByte - available: " + std::to_string(_hsize);
+        _zws = _zws + "\nEither not initialzed or too small (2MByte only) or not present at all. Firmware cannot start!!";
+        printf(_zws.c_str());
+        LogFile.SwitchOnOff(true);
+        LogFile.WriteToFile(_zws);
+        LogFile.SwitchOnOff(false);
+    }
+    else
+    {
         esp_err_t cam = Camera.InitCam();
-        if (cam != ESP_OK) {
-                ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
-                    "Check that your camera module is working and connected properly.");
+        if (cam != ESP_OK)
+        {
+            ESP_LOGE(TAGMAIN, "Failed to initialize camera module. "
+                              "Check that your camera module is working and connected properly.");
 
-                LogFile.SwitchOnOff(true);
-                LogFile.WriteToFile("Failed to initialize camera module. "
-                        "Check that your camera module is working and connected properly.");
-                LogFile.SwitchOnOff(false);
-        } else {
-// Test Camera            
-            camera_fb_t * fb = esp_camera_fb_get();
-            if (!fb) {
+            LogFile.SwitchOnOff(true);
+            LogFile.WriteToFile("Failed to initialize camera module. "
+                                "Check that your camera module is working and connected properly.");
+            LogFile.SwitchOnOff(false);
+        }
+        else
+        {
+            // Test Camera
+            camera_fb_t *fb = esp_camera_fb_get();
+            if (!fb)
+            {
                 ESP_LOGE(TAGMAIN, "esp_camera_fb_get: Camera Capture Failed");
                 LogFile.SwitchOnOff(true);
                 LogFile.WriteToFile("Camera cannot be initialzed. "
-                        "System will reboot.");
+                                    "System will reboot.");
                 doReboot();
             }
-            esp_camera_fb_return(fb);   
+            esp_camera_fb_return(fb);
 
             Camera.LightOnOff(false);
             TFliteDoAutoStart();
         }
     }
-
-
 }
-

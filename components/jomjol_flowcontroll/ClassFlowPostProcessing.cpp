@@ -457,7 +457,7 @@ void ClassFlowPostProcessing::InitNUMBERS()
         flowAnalog->UpdateNameNumbers(&name_numbers);
     }
 
-    printf("Anzahl NUMBERS: %d - DIGITS: %d, ANALOG: %d\n", name_numbers.size(), anzDIGIT, anzANALOG);
+    printf("Analyze NUMBERS: %d - DIGITS: %d, ANALOG: %d\n", name_numbers.size(), anzDIGIT, anzANALOG);
 
     for (int _num = 0; _num < name_numbers.size(); ++_num)
     {
@@ -740,7 +740,7 @@ void ClassFlowPostProcessing::UpdateNachkommaDecimalShift()
 
         }
 
-        printf("UpdateNachkommaDecShift NUMBER%i: Nachkomma %i, DecShift %i\n", j, NUMBERS[j]->Nachkomma,NUMBERS[j]->DecimalShift);
+        printf("Update decimal NUMBER%i: decimal %i, DecShift %i\n", j, NUMBERS[j]->Nachkomma,NUMBERS[j]->DecimalShift);
     }
 }
 

@@ -546,7 +546,7 @@ bool ClassFlowCNNGeneral::doNeuralNetwork(string time)
                         _nachkomma = tflite->GetOutClassification(11, 21);
 
 
-                        string _zwres = "Nach Invoke - Nummer: " + to_string(_num) + " Nachkomma: " + to_string(_nachkomma);
+                        string _zwres = "Invoke Number: " + to_string(_num) + " Decimal: " + to_string(_nachkomma);
                         if (debugdetailgeneral) LogFile.WriteToFile(_zwres);
 
                         if ((_num == 10) || (_nachkomma == 10))                      // NaN detektiert
